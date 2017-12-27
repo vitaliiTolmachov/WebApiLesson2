@@ -9,7 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
-namespace ProductsAPI
+namespace CategoriesAndDepartmentsAPI
 {
     public class Startup
     {
@@ -22,6 +22,7 @@ namespace ProductsAPI
             WebHost.CreateDefaultBuilder(args)
                 .UseStartup<Startup>()
                 .Build();
+
         public Startup(IHostingEnvironment env)
         {
             Configuration = new ConfigurationBuilder()
@@ -37,8 +38,8 @@ namespace ProductsAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IProductRepository, FakeProductRepository>();
-            services.AddTransient<IProductService, ProductService>();
+            services.AddTransient<IDepartmentRepository, FakeDepartmentsRepository>();
+            services.AddTransient<ICategoryRepository, FakeCategoryRepository>();
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
         }
@@ -76,7 +77,7 @@ namespace ProductsAPI
             app.UseMvc(routes => {
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
-                    defaults: new { controller = "Product", action = "GetAll" });
+                    defaults: new { controller = "Department", action = "Get" });
             });
         }
     }
