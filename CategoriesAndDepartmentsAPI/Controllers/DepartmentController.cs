@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using ApiRepository;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Repository;
 
 namespace CategoriesAndDepartmentsAPI.Controllers
@@ -32,23 +34,17 @@ namespace CategoriesAndDepartmentsAPI.Controllers
 
         // POST api/values
         [HttpPost]
-        public void Create([FromBody]Department newDept)
+        public async Task<IActionResult> Create([FromBody]Department newDept)
         {
-            bool deptAlreadyExists = Repository.Departments.Any(dept =>
+            if (ModelState.IsValid)
             {
-                bool idExists = dept.Id.Equals(newDept.Id);
-                bool nameExists = string.Equals(dept.Name, newDept.Name, StringComparison.InvariantCultureIgnoreCase);
-                return idExists && nameExists;
-            });
-            if (deptAlreadyExists)
-                return;
-            Repository.Add(newDept);
-        }
-
-        // PUT api/values/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
-        {
+                EntityEntry<Department> res = await Repository.Add(newDept);
+                return Json(res);
+            }
+            else
+            {
+                return BadRequest(newDept);
+            }
         }
 
         // DELETE api/values/5

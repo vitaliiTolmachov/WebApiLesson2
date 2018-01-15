@@ -1,4 +1,6 @@
-﻿using Domain;
+﻿using System.IO;
+using System.Threading.Tasks;
+using Domain;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
@@ -8,6 +10,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using ApiRepository;
+using Microsoft.EntityFrameworkCore;
 
 namespace ProductsAPI
 {
@@ -15,13 +19,36 @@ namespace ProductsAPI
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            var config = new ConfigurationBuilder()
+                .AddCommandLine(args)
+                .Build();
+
+            var host = new WebHostBuilder()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseConfiguration(config)
+                .UseStartup<Startup>()
+                .UseKestrel()
+                .UseIISIntegration()
+                .Build();
+
+            host.Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            // Only used by EF Tooling
+            return WebHost.CreateDefaultBuilder()
+                .ConfigureAppConfiguration((ctx, cfg) =>
+                {
+                    cfg.SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json", true) // require the json file!
+                        .AddEnvironmentVariables();
+                })
+                .ConfigureLogging((ctx, logging) => { }) // No logging
                 .UseStartup<Startup>()
+                .UseSetting("DesignTime", "true")
                 .Build();
+        }
         public Startup(IHostingEnvironment env)
         {
             Configuration = new ConfigurationBuilder()
@@ -37,10 +64,17 @@ namespace ProductsAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IProductRepository, FakeProductRepository>();
-            services.AddTransient<IProductService, ProductService>();
+            services.UseProductsRepository();
+            services.AddSingleton<IProductService, ProductService>();
+            services.AddSingleton(_ => Configuration);
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            services.AddEntityFrameworkSqlServer();
+            services.AddDbContext<ApiDbContext>((serviceProvider, dbOptionsBuilder) =>
+            {
+                dbOptionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));
+                dbOptionsBuilder.UseInternalServiceProvider(serviceProvider);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -51,8 +85,10 @@ namespace ProductsAPI
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseExceptionHandler(options => {
-                options.Run(async context => {
+            app.UseExceptionHandler(options =>
+            {
+                options.Run(async context =>
+                {
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     context.Response.ContentType = "application/json";
                     var ex = context.Features.Get<IExceptionHandlerFeature>();
@@ -78,6 +114,9 @@ namespace ProductsAPI
                     name: "spa-fallback",
                     defaults: new { controller = "Product", action = "GetAll" });
             });
+
+            //Store data to DB
+            //Task.WaitAll(DbHelper.StoreDataToDb(app));
         }
     }
 }

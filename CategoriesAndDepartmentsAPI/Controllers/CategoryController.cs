@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using Domain;
-using Microsoft.AspNetCore.Http;
+using ApiRepository;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
 
@@ -23,6 +20,15 @@ namespace CategoriesAndDepartmentsAPI.Controllers
         public IEnumerable<Category> Get()
         {
             return Repository.Categories;
+        }
+        public IEnumerable<Category> GetById(int id)
+        {
+            return Repository.Categories.Where(p => p.Id.Equals(id));
+        }
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
         }
     }
 }

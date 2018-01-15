@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ApiRepository;
 using Domain;
 using Microsoft.AspNetCore.Mvc;
 using Repository;
@@ -11,10 +12,10 @@ namespace ProductsAPI.Controllers
     [Route("api/[controller]/[action]")]
     public class ProductController : Controller
     {
-        private IProductRepository Repository { get;}
+        private IProductsRepository Repository { get;}
         private IProductService Service { get;}
 
-        public ProductController(IProductRepository repo, IProductService service)
+        public ProductController(IProductsRepository repo, IProductService service)
         {
             Repository = repo;
             Service = service;
@@ -42,17 +43,10 @@ namespace ProductsAPI.Controllers
             Service.AddProduct(product, categories);
             Repository.Products.Append(product);
         }
-
-        //// PUT api/values/5
-        //[HttpPut("{id}")]
-        //public void Put(int id, [FromBody]string value)
-        //{
-        //}
-
-        //// DELETE api/values/5
-        //[HttpDelete("{id}")]
-        //public void Delete(int id)
-        //{
-        //}
+        // DELETE api/values/5
+        [HttpDelete("{id}")]
+        public void Delete(int id)
+        {
+        }
     }
 }

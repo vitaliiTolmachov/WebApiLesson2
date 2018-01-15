@@ -22,6 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ApiRepository\ApiRepository\ApiRepository.csproj" />
     <ProjectReference Include="..\Repository\Domain.csproj" />
   </ItemGroup>
 

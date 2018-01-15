@@ -1,9 +1,12 @@
-﻿using Domain;
+﻿using System.IO;
+using ApiRepository;
+using Domain;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
@@ -15,13 +18,36 @@ namespace CategoriesAndDepartmentsAPI
     {
         public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            var config = new ConfigurationBuilder()
+                .AddCommandLine(args)
+                .Build();
+
+            var host = new WebHostBuilder()
+                .UseContentRoot(Directory.GetCurrentDirectory())
+                .UseConfiguration(config)
+                .UseStartup<Startup>()
+                .UseKestrel()
+                .UseIISIntegration()
+                .Build();
+
+            host.Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            // Only used by EF Tooling
+            return WebHost.CreateDefaultBuilder()
+                .ConfigureAppConfiguration((ctx, cfg) =>
+                {
+                    cfg.SetBasePath(Directory.GetCurrentDirectory())
+                        .AddJsonFile("appsettings.json", true) // require the json file!
+                        .AddEnvironmentVariables();
+                })
+                .ConfigureLogging((ctx, logging) => { }) // No logging
                 .UseStartup<Startup>()
+                .UseSetting("DesignTime", "true")
                 .Build();
+        }
 
         public Startup(IHostingEnvironment env)
         {
@@ -38,10 +64,17 @@ namespace CategoriesAndDepartmentsAPI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<IDepartmentRepository, FakeDepartmentsRepository>();
-            services.AddTransient<ICategoryRepository, FakeCategoryRepository>();
+            services.UseCategoryRepository();
+            services.UseDepartmentRepository();
+            services.AddSingleton(_ => Configuration);
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
+            services.AddEntityFrameworkSqlServer();
+            services.AddDbContext<ApiDbContext>((serviceProvider, dbOptionsBuilder) =>
+            {
+                dbOptionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));
+                dbOptionsBuilder.UseInternalServiceProvider(serviceProvider);
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
