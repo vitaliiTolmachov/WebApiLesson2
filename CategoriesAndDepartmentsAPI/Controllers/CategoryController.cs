@@ -21,9 +21,10 @@ namespace CategoriesAndDepartmentsAPI.Controllers
         {
             return Repository.Categories;
         }
-        public IEnumerable<Category> GetById(int id)
+        [HttpGet("{id}")]
+        public Category Get(int id)
         {
-            return Repository.Categories.Where(p => p.Id.Equals(id));
+            return Repository.Categories.SingleOrDefault(p => p.Id.Equals(id));
         }
         // DELETE api/values/5
         [HttpDelete("{id}")]

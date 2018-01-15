@@ -28,25 +28,33 @@ namespace ProductsAPI.Controllers
         }
 
         // GET api/values/5
-        [HttpGet]
-        public IEnumerable<Product> GetById(int id)
+        [HttpGet("{id}")]
+        public Product Get(int id)
         {
-            return Repository.Products.Where(p => p.Id.Equals(id));
+            return Repository.Products.SingleOrDefault(product => product.Id.Equals(id));
         }
 
         // POST api/values
         [HttpPost]
-        public async Task Create([FromBody]Product product)
+        public async Task<IActionResult> Create([FromBody]Product product)
         {
-            List<Department> depts = await Service.GetDepts();
-            List<Category> categories = await Service.GetCategories();
-            Service.AddProduct(product, categories);
-            Repository.Products.Append(product);
+            if (ModelState.IsValid)
+            {
+                Category category = await Service.Get<Category>($"http://localhost:65403/api/category/get", product.CategoryId.ToString());
+                if (category != null)
+                {
+                    Repository.AddProduct(product);
+                    return new JsonResult(product);
+                }
+                return BadRequest(product);
+            }
+            return BadRequest(product);
         }
         // DELETE api/values/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<Product> Delete(int id)
         {
+            return await Repository.RemoveProductById(id);
         }
     }
 }

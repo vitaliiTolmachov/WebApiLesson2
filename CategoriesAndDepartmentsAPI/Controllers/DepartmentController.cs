@@ -26,10 +26,10 @@ namespace CategoriesAndDepartmentsAPI.Controllers
         {
             return Repository.Departments;
         }
-
-        public IEnumerable<Department> GetById(int id)
+        [HttpGet("{id}")]
+        public Department Get(int id)
         {
-            return Repository.Departments.Where(p => p.Id.Equals(id));
+            return Repository.Departments.SingleOrDefault(p => p.Id.Equals(id));
         }
 
         // POST api/values
