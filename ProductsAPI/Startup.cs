@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore;
@@ -27,7 +28,10 @@ namespace ProductsAPI
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
-                .UseKestrel()
+                .UseKestrel(options =>
+                {
+                    options.Listen(IPAddress.Any, 5001);
+                })
                 .UseIISIntegration()
                 .Build();
 
