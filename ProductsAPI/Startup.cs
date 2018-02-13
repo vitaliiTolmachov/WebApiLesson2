@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ApiRepository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ProductsAPI
 {
@@ -74,6 +75,7 @@ namespace ProductsAPI
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddEntityFrameworkSqlServer();
+
             services.AddDbContext<ApiDbContext>((serviceProvider, dbOptionsBuilder) =>
             {
                 dbOptionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));
@@ -82,8 +84,10 @@ namespace ProductsAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory, ApiDbContext ctx)
         {
+            loggerFactory.AddConsole();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -120,7 +124,8 @@ namespace ProductsAPI
             });
 
             //Store data to DB
-            //Task.WaitAll(DbHelper.StoreDataToDb(app));
+            //Task.WaitAll(ApiDbInitializer.StoreDataToDb(app));
+            Task.WaitAll(ApiDbInitializer.Initialize(ctx));
         }
     }
 }

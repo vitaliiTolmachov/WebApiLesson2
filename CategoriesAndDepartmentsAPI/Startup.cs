@@ -1,5 +1,6 @@
 ﻿using System.IO;
 using System.Net;
+using System.Threading.Tasks;
 using ApiRepository;
 using Domain;
 using Microsoft.AspNetCore;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -82,8 +84,10 @@ namespace CategoriesAndDepartmentsAPI
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -119,6 +123,8 @@ namespace CategoriesAndDepartmentsAPI
                     name: "spa-fallback",
                     defaults: new { controller = "Department", action = "Get" });
             });
+            //Store to Db
+             Task.WaitAll(ApiDbInitializer.StoreDataToDb(app));
         }
     }
 }
