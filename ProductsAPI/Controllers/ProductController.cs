@@ -40,8 +40,8 @@ namespace ProductsAPI.Controllers
         }
 
         // POST api/values
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody]Product product)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody]Product product)
         {
             if (ModelState.IsValid)
             {

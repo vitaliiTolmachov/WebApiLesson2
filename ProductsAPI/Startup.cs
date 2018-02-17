@@ -142,7 +142,7 @@ namespace ProductsAPI
             });
 
             //Store data to DB
-            Task.WaitAll(DbHelper.StoreDataToDb(app));
+            Task.WaitAll(ApiDbInitializer.StoreDataToDb(app));
         }
     }
 }
