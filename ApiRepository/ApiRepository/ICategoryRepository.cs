@@ -14,8 +14,8 @@ namespace ApiRepository
     {
         private ApiDbContext _context { get; }
 
-        IEnumerable<Category> ICategoryRepository.Categories => _context.Categories.Include(category => category
-            .Department);
+        IEnumerable<Category> ICategoryRepository.Categories =>
+            _context.Categories.Include(category => category.Department);
         public EFCategoryRepository(ApiDbContext ctx)
         {
             this._context = ctx;

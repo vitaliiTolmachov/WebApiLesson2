@@ -79,6 +79,7 @@ namespace ProductsAPI
             services.AddMvc().AddJsonOptions(options =>
                 options.SerializerSettings.ContractResolver = new DefaultContractResolver());
             services.AddEntityFrameworkSqlServer();
+
             services.AddDbContext<ApiDbContext>((serviceProvider, dbOptionsBuilder) =>
             {
                 dbOptionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));

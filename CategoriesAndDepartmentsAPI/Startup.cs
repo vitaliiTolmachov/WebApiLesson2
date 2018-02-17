@@ -109,8 +109,10 @@ namespace CategoriesAndDepartmentsAPI
             }
             app.UseCors("FrontSite");
 
-            app.UseExceptionHandler(options => {
-                options.Run(async context => {
+            app.UseExceptionHandler(options =>
+            {
+                options.Run(async context =>
+                {
                     context.Response.StatusCode = StatusCodes.Status500InternalServerError;
                     context.Response.ContentType = "application/json";
                     var ex = context.Features.Get<IExceptionHandlerFeature>();
@@ -131,7 +133,8 @@ namespace CategoriesAndDepartmentsAPI
             app.UseDefaultFiles(); // For index.html
             app.UseStaticFiles(); // For the wwwroot folder
 
-            app.UseMvc(routes => {
+            app.UseMvc(routes =>
+            {
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
                     defaults: new { controller = "Department", action = "Get" });
