@@ -1,5 +1,6 @@
 ﻿using Repository;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace ApiRepository
@@ -12,7 +13,9 @@ namespace ApiRepository
     internal class EFCategoryRepository: ICategoryRepository
     {
         private ApiDbContext _context { get; }
-        IEnumerable<Category> ICategoryRepository.Categories => _context.Categories;
+
+        IEnumerable<Category> ICategoryRepository.Categories => _context.Categories.Include(category => category
+            .Department);
         public EFCategoryRepository(ApiDbContext ctx)
         {
             this._context = ctx;

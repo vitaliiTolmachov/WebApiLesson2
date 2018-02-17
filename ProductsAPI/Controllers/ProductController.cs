@@ -9,7 +9,7 @@ using Repository;
 namespace ProductsAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class ProductController : Controller
     {
         private IProductsRepository Repository { get;}
@@ -33,6 +33,11 @@ namespace ProductsAPI.Controllers
         {
             return Repository.Products.SingleOrDefault(product => product.Id.Equals(id));
         }
+        [HttpGet("{id}")]
+        public Product GetProductsByCategoryId(int id)
+        {
+            return Repository.Products.SingleOrDefault(product => product.Category.Id.Equals(id));
+        }
 
         // POST api/values
         [HttpPost]
@@ -40,7 +45,7 @@ namespace ProductsAPI.Controllers
         {
             if (ModelState.IsValid)
             {
-                Category category = await Service.Get<Category>($"http://localhost:65403/api/category/get", product.CategoryId.ToString());
+                Category category = await Service.Get<Category>($"http://localhost:5002/api/category/get", product.CategoryId.ToString());
                 if (category != null)
                 {
                     Repository.AddProduct(product);

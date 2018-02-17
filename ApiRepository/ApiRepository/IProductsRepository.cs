@@ -29,7 +29,7 @@ namespace ApiRepository
         }
         private ApiDbContext _context { get; }
 
-        IEnumerable<Product> IProductsRepository.Products => _context.Products;
+        IEnumerable<Product> IProductsRepository.Products => _context.Products.Include(product => product.Category);
         public EFProductRepository(ApiDbContext ctx)
         {
             this._context = ctx;

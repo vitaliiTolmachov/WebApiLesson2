@@ -9,7 +9,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CategoriesAndDepartmentsAPI
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "Repository\Domain.csproj", "{32D27A1A-26DE-460F-AC90-DC7D167CC823}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiRepository", "ApiRepository\ApiRepository\ApiRepository.csproj", "{D10F9073-B8DA-4EF8-9DCC-9A3A9722BFBD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiRepository", "ApiRepository\ApiRepository\ApiRepository.csproj", "{D10F9073-B8DA-4EF8-9DCC-9A3A9722BFBD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProductClient", "ProductClient\ProductClient.csproj", "{19CACB9F-3C11-4405-9CD3-FEFA8EA880B8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,10 @@ Global
 		{D10F9073-B8DA-4EF8-9DCC-9A3A9722BFBD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D10F9073-B8DA-4EF8-9DCC-9A3A9722BFBD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D10F9073-B8DA-4EF8-9DCC-9A3A9722BFBD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{19CACB9F-3C11-4405-9CD3-FEFA8EA880B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{19CACB9F-3C11-4405-9CD3-FEFA8EA880B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{19CACB9F-3C11-4405-9CD3-FEFA8EA880B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{19CACB9F-3C11-4405-9CD3-FEFA8EA880B8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Net;
 using System.Threading.Tasks;
 using Domain;
 using Microsoft.AspNetCore;
@@ -12,6 +13,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using ApiRepository;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace ProductsAPI
 {
@@ -27,7 +29,14 @@ namespace ProductsAPI
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
-                .UseKestrel()
+                .UseKestrel(options =>
+                {
+                    options.Listen(IPAddress.Any, 5001);
+                })
+                .ConfigureLogging(builder =>
+                {
+                    builder.SetMinimumLevel(LogLevel.Debug);
+                })
                 .UseIISIntegration()
                 .Build();
 
@@ -53,7 +62,7 @@ namespace ProductsAPI
         {
             Configuration = new ConfigurationBuilder()
                 .SetBasePath(env.ContentRootPath)
-                .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .AddJsonFile($"appsettings.{env.EnvironmentName}.json", optional: true)
                 .AddEnvironmentVariables()
                 .Build();
@@ -75,11 +84,26 @@ namespace ProductsAPI
                 dbOptionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));
                 dbOptionsBuilder.UseInternalServiceProvider(serviceProvider);
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("FrontSite", builder =>
+                {
+                    builder.AllowAnyHeader()
+                    .AllowAnyMethod()
+                    .AllowAnyMethod()
+                    .WithOrigins("*");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            app.UseCors("FrontSite");
+
+            loggerFactory.AddConsole();
+            loggerFactory.AddDebug();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -109,14 +133,15 @@ namespace ProductsAPI
             app.UseDefaultFiles(); // For index.html
             app.UseStaticFiles(); // For the wwwroot folder
 
-            app.UseMvc(routes => {
+            app.UseMvc(routes =>
+            {
                 routes.MapSpaFallbackRoute(
                     name: "spa-fallback",
                     defaults: new { controller = "Product", action = "GetAll" });
             });
 
             //Store data to DB
-            //Task.WaitAll(DbHelper.StoreDataToDb(app));
+            Task.WaitAll(DbHelper.StoreDataToDb(app));
         }
     }
 }

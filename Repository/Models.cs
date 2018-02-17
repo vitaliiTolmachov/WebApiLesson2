@@ -15,7 +15,7 @@ namespace Repository
         public string Name { get; set; }
 
         public int? CategoryId { get; set; }
-        [JsonIgnore]
+        //[JsonIgnore]
         public Category Category { get; set; }
     }
 
@@ -28,7 +28,7 @@ namespace Repository
         public string Name { get; set; }
 
         public int? DepartmentId { get; set; }
-        [JsonIgnore]
+        //[JsonIgnore]
         public Department Department { get; set; }
         [JsonIgnore]
         public List<Product> Products { get; set; }

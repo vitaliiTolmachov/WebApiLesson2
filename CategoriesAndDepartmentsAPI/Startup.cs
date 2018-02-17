@@ -1,4 +1,6 @@
 ﻿using System.IO;
+using System.Net;
+using System.Threading.Tasks;
 using ApiRepository;
 using Domain;
 using Microsoft.AspNetCore;
@@ -9,6 +11,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -26,7 +29,14 @@ namespace CategoriesAndDepartmentsAPI
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseConfiguration(config)
                 .UseStartup<Startup>()
-                .UseKestrel()
+                .UseKestrel(options =>
+                {
+                    options.Listen(IPAddress.Any, 5002);
+                })
+                .ConfigureLogging(builder =>
+                {
+                    builder.SetMinimumLevel(LogLevel.Debug);
+                })
                 .UseIISIntegration()
                 .Build();
 
@@ -75,15 +85,29 @@ namespace CategoriesAndDepartmentsAPI
                 dbOptionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));
                 dbOptionsBuilder.UseInternalServiceProvider(serviceProvider);
             });
+            services.AddCors(options =>
+            {
+                options.AddPolicy("FrontSite", builder =>
+                {
+                    builder.AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowAnyMethod()
+                        .WithOrigins("*");
+                });
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, ILoggerFactory loggerFactory)
         {
+            loggerFactory.AddConsole();
+            loggerFactory.AddDebug();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
             }
+            app.UseCors("FrontSite");
 
             app.UseExceptionHandler(options => {
                 options.Run(async context => {
@@ -112,6 +136,9 @@ namespace CategoriesAndDepartmentsAPI
                     name: "spa-fallback",
                     defaults: new { controller = "Department", action = "Get" });
             });
+
+            //Store data to DB
+            Task.WaitAll(DbHelper.StoreDataToDb(app));
         }
     }
 }
