@@ -12,7 +12,7 @@ using Repository;
 namespace CategoriesAndDepartmentsAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class DepartmentController : Controller
     {
         public IDepartmentRepository Repository { get; set; }

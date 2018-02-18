@@ -33,11 +33,6 @@ namespace ProductsAPI.Controllers
         {
             return Repository.Products.SingleOrDefault(product => product.Id.Equals(id));
         }
-        [HttpGet("{id}")]
-        public Product GetProductsByCategoryId(int id)
-        {
-            return Repository.Products.SingleOrDefault(product => product.Category.Id.Equals(id));
-        }
 
         // POST api/values
         [HttpPut]

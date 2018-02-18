@@ -7,7 +7,7 @@ using Repository;
 namespace CategoriesAndDepartmentsAPI.Controllers
 {
     [Produces("application/json")]
-    [Route("api/[controller]/[action]")]
+    [Route("api/[controller]")]
     public class CategoryController : Controller
     {
         private ICategoryRepository Repository { get;}

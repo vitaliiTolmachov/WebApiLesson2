@@ -22,11 +22,15 @@ namespace ApiRepository
         {
         }
 
+        public ApiDbContext()
+        {
+            
+        }
         //Creates DBContext as Factory on Startup.cs when buildeing host
         public ApiDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApiDbContext>();
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));
+            optionsBuilder.UseSqlServer("Server=DESKTOP-NOG5MV7;Database=ProductsApi;Trusted_Connection=True;MultipleActiveResultSets=true");
             return new ApiDbContext(optionsBuilder.Options);
         }
 
@@ -49,7 +53,7 @@ namespace ApiRepository
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("ProductApi"));
+            optionsBuilder.UseSqlServer("Server=DESKTOP-NOG5MV7;Database=ProductsApi;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Category> Categories { get; set; }
