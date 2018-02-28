@@ -30,7 +30,7 @@ namespace ApiRepository
         public ApiDbContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApiDbContext>();
-            optionsBuilder.UseSqlServer("Server=DESKTOP-NOG5MV7;Database=ProductsApi;Trusted_Connection=True;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("Server=ESPC007;Database=ProductApi;Trusted_Connection=True;MultipleActiveResultSets=true");
             return new ApiDbContext(optionsBuilder.Options);
         }
 
@@ -53,7 +53,7 @@ namespace ApiRepository
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.EnableSensitiveDataLogging();
-            optionsBuilder.UseSqlServer("Server=DESKTOP-NOG5MV7;Database=ProductsApi;Trusted_Connection=True;MultipleActiveResultSets=true");
+            optionsBuilder.UseSqlServer("Server=ESPC007;Database=ProductApi;Trusted_Connection=True;MultipleActiveResultSets=true");
         }
         public DbSet<Department> Departments { get; set; }
         public DbSet<Category> Categories { get; set; }
