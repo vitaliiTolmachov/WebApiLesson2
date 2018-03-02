@@ -14,6 +14,7 @@ namespace ApiRepository
         IEnumerable<Product> Products { get; }
         int AddProduct(Product product);
         Task<Product> RemoveProductById(int id);
+        Task<Product> UpdateProductAsync(Product product);
     }
     internal class EFProductRepository : IProductsRepository
     {
@@ -27,6 +28,14 @@ namespace ApiRepository
             }
             return product;
         }
+
+        public async Task<Product> UpdateProductAsync(Product newProduct)
+        {
+            _context.Products.Update(newProduct);
+            await _context.SaveChangesAsync();
+            return newProduct;
+        }
+
         private ApiDbContext _context { get; }
 
         IEnumerable<Product> IProductsRepository.Products =>

@@ -50,6 +50,19 @@ namespace ProductsAPI.Controllers
             }
             return BadRequest(product);
         }
+        [HttpPatch]
+        public async Task<IActionResult> Patch([FromBody] Product product)
+        {
+            if (ModelState.IsValid)
+            {
+                Product newProduct = await Repository.UpdateProductAsync(product);
+                return Ok(newProduct);
+            }
+            else
+            {
+                return BadRequest(product);
+            }
+        }
         // DELETE api/values/5
         [HttpDelete("{id}")]
         public async Task<Product> Delete(int id)
